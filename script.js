@@ -14,6 +14,16 @@ const mainContent = document.querySelector('main');
 const loadingSpinner = document.getElementById('loading-spinner');
 const errorMessage = document.getElementById('error-message');
 
+// Modal elements
+const sessionModal = document.getElementById('sessionModal');
+const closeModalButton = document.getElementById('closeModalButton');
+const modalSessionName = document.getElementById('modalSessionName');
+const modalTime = document.getElementById('modalTime');
+const modalInstructor = document.getElementById('modalInstructor');
+const modalLocation = document.getElementById('modalLocation');
+const modalDescription = document.getElementById('modalDescription');
+
+
 // Function to show a specific tab
 function showTab(tabId) {
     // Get all tab buttons and content sections dynamically
@@ -54,10 +64,24 @@ function createTableHtml(headers, rows, tabTitle, headerColorClass) {
     tableHtml += `</tr></thead><tbody class="divide-y divide-gray-200">`;
 
     rows.forEach(row => {
+        // Assume the first column is always 'Time'
+        const time = row[0];
         tableHtml += `<tr>`;
         row.forEach((cell, index) => {
             const dataLabel = headers[index] || ''; // Use header for data-label
-            tableHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" data-label="${dataLabel}">${cell}</td>`;
+            // If it's a daily session cell (not the time column)
+            if (index > 0 && cell.trim() !== '') {
+                // Add data attributes for the modal
+                tableHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 session-cell cursor-pointer hover:bg-gray-100 transition duration-150 ease-in-out" 
+                                data-label="${dataLabel}" 
+                                data-session-name="${cell}" 
+                                data-session-time="${time}"
+                                data-session-day="${headers[index]}">
+                                ${cell}
+                              </td>`;
+            } else {
+                tableHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-label="${dataLabel}">${cell}</td>`;
+            }
         });
         tableHtml += `</tr>`;
     });
@@ -122,7 +146,7 @@ async function fetchGoogleSheetData() {
     }
     loadingSpinner.classList.add('hidden'); // Hide loading spinner
 
-    // After dynamically adding tabs, re-attach event listeners
+    // After dynamically adding tabs, re-attach event listeners to ALL tab buttons
     document.querySelectorAll('.tab-button').forEach(button => {
         button.removeEventListener('click', showTabHandler); // Remove old listener if exists
         button.addEventListener('click', showTabHandler);
@@ -137,6 +161,44 @@ function showTabHandler(event) {
     showTab(event.currentTarget.id);
 }
 
+// Function to open the session modal
+function openSessionModal(sessionName, time, day) {
+    // Mock data for instructor and location since it's not in the current sheet format
+    const instructor = "Expert Coach " + (Math.random() > 0.5 ? "Bali" : "Skate"); // Simple mock
+    const location = "Canggu Skate Park (" + day + ")"; // Simple mock
+
+    modalSessionName.textContent = sessionName;
+    modalTime.textContent = time;
+    modalInstructor.textContent = instructor;
+    modalLocation.textContent = location;
+    modalDescription.textContent = `Get ready for an exciting "${sessionName}" session! This session focuses on [specific details related to session, if available]. We'll be working on [skills, tricks, or activities].`; // Example description
+
+    sessionModal.classList.add('active'); // Show modal
+}
+
+// Function to close the session modal
+function closeSessionModal() {
+    sessionModal.classList.remove('active'); // Hide modal
+}
+
+// Event listener for opening modal by clicking session cells
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('session-cell')) {
+        const sessionName = event.target.dataset.sessionName;
+        const sessionTime = event.target.dataset.sessionTime;
+        const sessionDay = event.target.dataset.sessionDay;
+        openSessionModal(sessionName, sessionTime, sessionDay);
+    }
+});
+
+// Event listener for closing modal
+closeModalButton.addEventListener('click', closeSessionModal);
+sessionModal.addEventListener('click', function(event) {
+    // Close modal if clicked outside the content area
+    if (event.target === sessionModal) {
+        closeSessionModal();
+    }
+});
+
 // Call the function to fetch data when the DOM is loaded
 document.addEventListener('DOMContentLoaded', fetchGoogleSheetData);
-
