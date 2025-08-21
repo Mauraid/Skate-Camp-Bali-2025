@@ -1,21 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Camp Schedule</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 1rem; background: #f9f9f9; }
-    header { text-align: center; margin-bottom: 1rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.5rem; }
-    th { background: #3498db; color: white; }
-    tbody tr:nth-child(odd) { background: #f2f2f2; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skate Camp Bali 2025 - Schedule</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for tab transitions and general look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            color: #333;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab-button.active {
+            background-color: #1a73e8; /* Google Blue */
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px); /* Slight lift */
+        }
+        /* Table responsiveness for smaller screens */
+        @media (max-width: 768px) {
+            .responsive-table table {
+                width: 100%;
+                display: block;
+                overflow-x: auto; /* Allows horizontal scrolling for tables */
+                white-space: nowrap; /* Prevents content from wrapping */
+            }
+            .responsive-table thead, .responsive-table tbody, .responsive-table th, .responsive-table td, .responsive-table tr {
+                display: block;
+            }
+            .responsive-table th {
+                text-align: left;
+                padding: 8px 12px;
+                background-color: #e2e8f0; /* Light gray for headers */
+            }
+            .responsive-table td {
+                /* Make table cells stackable or manageable */
+                border-bottom: 1px solid #e2e8f0;
+                padding: 8px 12px;
+            }
+            .responsive-table tr {
+                margin-bottom: 15px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                overflow: hidden; /* Ensures rounded corners apply */
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+            .responsive-table td:before {
+                /* Add a pseudo-element to display the header on mobile */
+                content: attr(data-label);
+                font-weight: bold;
+                display: inline-block;
+                width: 100px; /* Adjust as needed */
+                margin-right: 10px;
+                color: #4a5568;
+            }
+        }
+    </style>
 </head>
-<body>
-  <header><h1>Camp Schedule</h1></header>
-  <div id="schedule">Loading schedule…</div>
-  <script src="script.js"></script>
+<body class="min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
+    <header class="w-full max-w-4xl bg-white p-6 rounded-xl shadow-lg mb-8 text-center">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-blue-800 mb-4">
+            Skate Camp Bali 2025 🛹🌴
+        </h1>
+        <p class="text-lg text-gray-700">Your ultimate skateboarding adventure in paradise!</p>
+    </header>
+
+    <main class="w-full max-w-4xl bg-white p-6 rounded-xl shadow-lg">
+        <!-- Tab Navigation -->
+        <nav id="tab-navigation" class="flex flex-wrap justify-center sm:justify-start gap-3 mb-6">
+            <button id="tab-intro" class="tab-button px-6 py-3 rounded-full text-base font-medium transition-all duration-300 ease-in-out hover:bg-blue-100 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 active">
+                Introduction
+            </button>
+            <!-- Dynamic tab buttons will be inserted here by JavaScript -->
+        </nav>
+
+        <!-- Tab Content -->
+        <div id="content-intro" class="tab-content active p-4 rounded-lg bg-gray-50 border border-gray-200">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Welcome to Skate Camp Bali 2025!</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Get ready for an unforgettable experience blending the thrill of skateboarding with the beauty and culture of Bali. Our camp offers personalized coaching, amazing skate spots, and incredible cultural excursions. Whether you're a beginner looking to land your first ollie or an experienced skater aiming to master new tricks, our expert instructors are here to guide you.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+                Join us for one or two weeks of sun, surf, and shredding! Explore the vibrant Balinese landscape, enjoy delicious local cuisine, and connect with fellow skaters from around the world.
+            </p>
+            <ul class="list-disc list-inside text-gray-700 mt-4 space-y-1">
+                <li>Professional coaching for all skill levels</li>
+                <li>Access to top skate parks and street spots</li>
+                <li>Surf lessons and beach activities</li>
+                <li>Cultural tours and local experiences</li>
+                <li>Comfortable accommodation and healthy meals</li>
+            </ul>
+        </div>
+
+        <!-- Dynamic tab content (tables) will be inserted here by JavaScript -->
+        <div id="loading-spinner" class="hidden flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <p class="ml-4 text-lg text-gray-600">Loading schedules...</p>
+        </div>
+
+        <div id="error-message" class="hidden p-4 rounded-lg bg-red-100 border border-red-400 text-red-700">
+            <p>Failed to load schedule data. Please ensure the Google Sheet is published correctly and the URLs are valid.</p>
+        </div>
+    </main>
+
+    <script>
+        // Define your Google Sheet URLs here.
+        // IMPORTANT: These should be published to the web as CSV or JSON.
+        // For example, from File > Share > Publish to web, select CSV for the sheet.
+        const googleSheetUrls = [
+            // This URL fetches the first sheet as CSV, which likely corresponds to "Path 1"
+            { id: 'path1', name: 'Path 1 Schedule', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?output=csv' },
+            // Path 2 URL provided by the user
+            { id: 'path2', name: 'Path 2 Schedule', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?gid=122183591&single=true&output=csv' },
+            // Kids Path URL added as requested
+            { id: 'kids-path', name: 'Kids Path Schedule', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?gid=1377983576&single=true&output=csv' }
+        ];
+
+        const tabNavigation = document.getElementById('tab-navigation');
+        const mainContent = document.querySelector('main');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const errorMessage = document.getElementById('error-message');
+
+        // Function to show a specific tab
+        function showTab(tabId) {
+            // Get all tab buttons and content sections dynamically
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            // Remove 'active' class from all buttons and content
+            tabButtons.forEach(button => button.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add 'active' class to the clicked button and its corresponding content
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('content-' + tabId.replace('tab-', '')).classList.add('active');
+        }
+
+        // Function to parse CSV data into an array of arrays
+        function parseCSV(csvText) {
+            const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== ''); // Split by new line, remove empty lines
+            if (lines.length === 0) return [];
+
+            const data = lines.map(line => {
+                // Simple CSV parsing: split by comma.
+                // This might need more robust parsing for commas within quoted fields.
+                return line.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')); // Trim and remove quotes
+            });
+            return data;
+        }
+
+        // Function to create a table from data
+        function createTableHtml(headers, rows, tabTitle, headerColorClass) {
+            let tableHtml = `<h2 class="text-3xl font-bold text-gray-800 mb-4">${tabTitle}</h2>`;
+            tableHtml += `<table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">`;
+            tableHtml += `<thead class="${headerColorClass} text-white"><tr>`;
+            headers.forEach((header, index) => {
+                const cornerClass = index === 0 ? 'rounded-tl-lg' : (index === headers.length - 1 ? 'rounded-tr-lg' : '');
+                tableHtml += `<th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider ${cornerClass}">${header}</th>`;
+            });
+            tableHtml += `</tr></thead><tbody class="divide-y divide-gray-200">`;
+
+            rows.forEach(row => {
+                tableHtml += `<tr>`;
+                row.forEach((cell, index) => {
+                    const dataLabel = headers[index] || ''; // Use header for data-label
+                    tableHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" data-label="${dataLabel}">${cell}</td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+            tableHtml += `</tbody></table>`;
+            return tableHtml;
+        }
+
+        // Function to fetch and render Google Sheet data
+        async function fetchGoogleSheetData() {
+            loadingSpinner.classList.remove('hidden'); // Show loading spinner
+            errorMessage.classList.add('hidden'); // Hide error message
+
+            // Clear previously loaded dynamic content (if any)
+            document.querySelectorAll('.dynamic-tab-button').forEach(btn => btn.remove());
+            document.querySelectorAll('.dynamic-tab-content').forEach(content => content.remove());
+
+
+            for (const sheet of googleSheetUrls) {
+                try {
+                    const response = await fetch(sheet.url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const csvText = await response.text();
+                    const data = parseCSV(csvText);
+
+                    if (data.length > 0) {
+                        const headers = data[0]; // First row as headers
+                        const rows = data.slice(1); // Rest of the rows as data
+
+                        let headerColor;
+                        if (sheet.id === 'path1') {
+                            headerColor = 'bg-blue-600';
+                        } else if (sheet.id === 'path2') {
+                            headerColor = 'bg-purple-600';
+                        } else if (sheet.id === 'kids-path') {
+                            headerColor = 'bg-green-600'; // New color for Kids Path
+                        } else {
+                            headerColor = 'bg-gray-600'; // Default color for any other paths
+                        }
+
+                        const tableHtml = createTableHtml(headers, rows, sheet.name, headerColor);
+
+                        // Create new tab button
+                        const newButton = document.createElement('button');
+                        newButton.id = `tab-${sheet.id}`;
+                        newButton.className = 'tab-button dynamic-tab-button px-6 py-3 rounded-full text-base font-medium transition-all duration-300 ease-in-out hover:bg-blue-100 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500';
+                        newButton.textContent = sheet.name;
+                        tabNavigation.appendChild(newButton);
+
+                        // Create new tab content div
+                        const newContentDiv = document.createElement('div');
+                        newContentDiv.id = `content-${sheet.id}`;
+                        newContentDiv.className = 'tab-content dynamic-tab-content p-4 rounded-lg bg-gray-50 border border-gray-200 responsive-table';
+                        newContentDiv.innerHTML = tableHtml;
+                        mainContent.appendChild(newContentDiv);
+                    }
+                } catch (error) {
+                    console.error(`Could not fetch data for ${sheet.name}:`, error);
+                    errorMessage.classList.remove('hidden'); // Show error message if any fetch fails
+                }
+            }
+            loadingSpinner.classList.add('hidden'); // Hide loading spinner
+
+            // After dynamically adding tabs, re-attach event listeners
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.removeEventListener('click', showTabHandler); // Remove old listener if exists
+                button.addEventListener('click', showTabHandler);
+            });
+
+            // Re-select all tab buttons and content and show the default tab
+            showTab('tab-intro');
+        }
+
+        // Event handler wrapper for dynamically added buttons
+        function showTabHandler(event) {
+            showTab(event.currentTarget.id);
+        }
+
+        // Call the function to fetch data when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', fetchGoogleSheetData);
+    </script>
 </body>
 </html>
