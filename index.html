@@ -21,7 +21,7 @@
             display: block;
         }
         .tab-button.active {
-            background-color: #1a73e8; /* Google Blue */
+            background-color: #189dc2; /* Blue */
             color: white;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transform: translateY(-2px); /* Slight lift */
@@ -118,9 +118,9 @@
         // For example, from File > Share > Publish to web, select CSV for the sheet.
         const googleSheetUrls = [
             // This URL fetches the first sheet as CSV, which likely corresponds to "Path 1"
-            { id: 'path1', name: 'ICP Certification Schedule', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?output=csv' },
+            { id: 'path0', name: 'ICP Certification Schedule', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?output=csv' },
             // Path 2 URL provided by the user
-            { id: 'path2', name: 'Path 1 Schedule', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?gid=122183591&single=true&output=csv' },
+            { id: 'path1', name: 'Path 1 Schedule', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?gid=122183591&single=true&output=csv' },
             // Kids Path URL added as requested
             { id: 'kids-path', name: 'Kids Path Schedule', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?gid=1377983576&single=true&output=csv' }
         ];
@@ -205,12 +205,12 @@
                         const rows = data.slice(1); // Rest of the rows as data
 
                         let headerColor;
-                        if (sheet.id === 'path1') {
+                        if (sheet.id === 'path0') {
                             headerColor = 'bg-blue-600';
-                        } else if (sheet.id === 'path2') {
-                            headerColor = 'bg-purple-600';
+                        } else if (sheet.id === 'path1') {
+                            headerColor = 'bg-green-600';
                         } else if (sheet.id === 'kids-path') {
-                            headerColor = 'bg-green-600'; // New color for Kids Path
+                            headerColor = 'bg-orange-600'; // New color for Kids Path
                         } else {
                             headerColor = 'bg-gray-600'; // Default color for any other paths
                         }
